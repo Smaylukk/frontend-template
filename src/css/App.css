@@ -53,6 +53,17 @@ textarea {
   right: 0;
   width: 300px;
 }
+.todoItemButton:hover {
+  border: 1px solid black;
+  padding: 1px;
+}
+.completedState {
+  text-decoration: line-through;
+  color: darkgreen;
+}
+.todoItem:hover {
+  background-color: rgba(192, 189, 192, 0.4);
+}
 
 @keyframes App-logo-spin {
   from {

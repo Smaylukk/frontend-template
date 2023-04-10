@@ -1,17 +1,18 @@
 import { observer } from 'mobx-react-lite'
 import React, { useContext, useEffect, useState } from 'react'
-import { Button, Container, Form, InputGroup, ListGroup, Pagination, Row } from 'react-bootstrap'
+import { Button, Container, Form, InputGroup, ListGroup, Row } from 'react-bootstrap'
 import TodoAPI, { ITodo } from '../http/todoAPI'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import todoAPI from '../http/todoAPI'
 import { Context } from '../index'
 import { UserType } from '../store/UserStore'
 
-const itemsPagination: JSX.Element[] = []
 const Home = observer(() => {
   const [todoList, setTodoList] = useState<ITodo[]>([])
-  const [newTodo, setNewTodo] = useState<string>('')
+  const [newTodo, setNewTodo] = useState('')
   const [updateState, setUpdateState] = useState(true)
+  const [editIndex, setEditIndex] = useState(-1)
+  const [editTodo, setEditTodo] = useState('')
   const { userStore } = useContext(Context) as UserType
 
   useEffect(() => {
@@ -36,11 +37,26 @@ const Home = observer(() => {
     await todoAPI.deleteTodo(id)
     setUpdateState(true)
   }
+  const editTodoHandler = async () => {
+    const data = { title: editTodo }
+    await todoAPI.changeTodo(editIndex, data)
+    setEditIndex(-1)
+    setUpdateState(true)
+  }
+  const cancelEditTodoHandler = () => {
+    setEditIndex(-1)
+    setUpdateState(true)
+  }
+  const toggleCompletedTodoHandler = async (id: number, currentStateCompleted: boolean) => {
+    const data = { completed: !currentStateCompleted }
+    await todoAPI.changeTodo(id, data)
+    setUpdateState(true)
+  }
 
   return (
     <Container>
       <header className='mt-2' role='banner'>
-        <h2>Публікації:</h2>
+        <h2>Список завдань:</h2>
       </header>
       <main className='mt-auto' role='main'>
         <InputGroup>
@@ -52,37 +68,78 @@ const Home = observer(() => {
               setNewTodo(e.target.value)
             }}
           />
-          <Button variant='primary' onClick={addTodoHandler}>
-            Add new todo
+          <Button className={'mx-1'} variant='primary' onClick={addTodoHandler}>
+            Додати
           </Button>
         </InputGroup>
         <Container className={'todo-list'} fluid>
           <Row>
             <ListGroup>
               {todoList.map((el) => {
-                return (
-                  <ListGroup.Item key={el.id} className={'d-flex justify-content-between'} action>
-                    {el.title}
-                    <div className={'mr-auto'}>
-                      <FontAwesomeIcon
-                        className={'mx-2'}
-                        icon={el.completed ? 'square-check' : 'square-minus'}
-                      />
-                      <FontAwesomeIcon className={'mx-2'} icon={'pen'} />
-                      <FontAwesomeIcon
-                        icon={'trash'}
-                        onClick={async () => {
-                          await deleteTodoHandler(el.id!)
-                        }}
-                      />
-                    </div>
-                  </ListGroup.Item>
-                )
+                if (editIndex === el.id) {
+                  return (
+                    <ListGroup.Item key={el.id} className={'d-flex justify-content-between'}>
+                      <InputGroup>
+                        <Form.Control
+                          type='text'
+                          id='newTodo'
+                          value={editTodo}
+                          onChange={(e) => {
+                            setEditTodo(e.target.value)
+                          }}
+                        />
+                        <Button className={'mx-1'} variant='primary' onClick={editTodoHandler}>
+                          Зберегти
+                        </Button>
+                        <Button variant='danger' onClick={cancelEditTodoHandler}>
+                          Відміна
+                        </Button>
+                      </InputGroup>
+                    </ListGroup.Item>
+                  )
+                } else {
+                  return (
+                    <ListGroup.Item
+                      key={el.id}
+                      className={`d-flex justify-content-between todoItem ${
+                        el.completed ? 'completedState' : ''
+                      }`}
+                    >
+                      {el.title}
+                      <div className={'mr-auto'}>
+                        <FontAwesomeIcon
+                          color={'blue'}
+                          className={'todoItemButton'}
+                          icon={el.completed ? 'square-check' : 'square-minus'}
+                          onClick={async () => {
+                            await toggleCompletedTodoHandler(el.id!, el.completed)
+                          }}
+                        />
+                        <FontAwesomeIcon
+                          className={'mx-2 todoItemButton'}
+                          color={'green'}
+                          icon={'pen'}
+                          onClick={() => {
+                            setEditTodo(el.title)
+                            setEditIndex(el.id!)
+                          }}
+                        />
+                        <FontAwesomeIcon
+                          className={'todoItemButton'}
+                          icon={'trash'}
+                          color={'red'}
+                          onClick={async () => {
+                            await deleteTodoHandler(el.id!)
+                          }}
+                        />
+                      </div>
+                    </ListGroup.Item>
+                  )
+                }
               })}
             </ListGroup>
           </Row>
         </Container>
-        <Pagination className='d-flex justify-content-end'>{itemsPagination}</Pagination>
       </main>
     </Container>
   )

@@ -6,7 +6,7 @@ const restApiTodo = '/api/todo'
 export interface ITodo {
   id?: number
   title: string
-  completed?: boolean
+  completed: boolean
   userId: number
 }
 class ToDoAPI {
@@ -28,7 +28,7 @@ class ToDoAPI {
     return todos.data
   }
 
-  async changeTodo(id: number, data: ITodo): Promise<ITodo> {
+  async changeTodo(id: number, data): Promise<ITodo> {
     await userAPI.check()
     const todos = await $authHost.put<ITodo>(`${restApiTodo}/${id}`, data)
     return todos.data
