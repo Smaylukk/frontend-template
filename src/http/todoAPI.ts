@@ -12,8 +12,8 @@ export interface ITodo {
 class ToDoAPI {
   async getAllTodo(): Promise<ITodo[]> {
     await userAPI.check()
-    const todos = await $authHost.get<{ count: number; rows: ITodo[] }>(restApiTodo)
-    return todos.data.rows
+    const todos = await $authHost.get<ITodo[]>(restApiTodo)
+    return todos.data
   }
 
   async getOneTodo(id: number): Promise<ITodo> {
