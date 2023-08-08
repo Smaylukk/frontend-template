@@ -3,6 +3,7 @@ import React, { useContext } from 'react'
 import { Navbar, Container, Nav, Button } from 'react-bootstrap'
 import { Context } from '..'
 import { UserType } from '../store/UserStore'
+import logo from '../logo.png'
 
 const NavBar = observer(() => {
   const { userStore } = useContext(Context) as UserType
@@ -23,6 +24,7 @@ const NavBar = observer(() => {
       <Navbar bg='primary' variant='dark'>
         <Container>
           <Navbar.Brand href='/'>
+            <img src={logo} height='30' alt='' loading='lazy' />
             ToDo-list {userStore.isAuth ? `- ${userStore.user.email}(${userStore.user.name})` : ''}
           </Navbar.Brand>
           <Nav className='ms-auto'>
