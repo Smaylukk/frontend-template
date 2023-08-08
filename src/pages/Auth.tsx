@@ -28,9 +28,9 @@ const Auth = observer(() => {
 
   const validateForm = (): boolean => {
     let isValid = true
-    console.log(passInput.current)
-    if (!passInput.current) return true
-    console.log('validation')
+    if (!isRegPage) return isValid
+    if (!passInput.current) return isValid
+
     if (password.length < 4) {
       passInput.current.setCustomValidity('Довжина паролю має бути більша за 4 символи')
       isValid = false
