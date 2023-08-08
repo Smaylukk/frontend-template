@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
-import { Button, Form, InputGroup } from 'react-bootstrap'
+import { MDBBtn, MDBInput, MDBInputGroup } from 'mdb-react-ui-kit'
 
 interface AddTodoProps {
   addTodoHandler: (newTodo: string) => Promise<void>
@@ -9,8 +9,8 @@ interface AddTodoProps {
 const AddTodo: React.FC<AddTodoProps> = observer(({ addTodoHandler }) => {
   const [newTodo, setNewTodo] = useState('')
   return (
-    <InputGroup>
-      <Form.Control
+    <MDBInputGroup>
+      <MDBInput
         type='text'
         id='newTodo'
         value={newTodo}
@@ -18,9 +18,9 @@ const AddTodo: React.FC<AddTodoProps> = observer(({ addTodoHandler }) => {
           setNewTodo(e.target.value)
         }}
       />
-      <Button
+      <MDBBtn
         className={'mx-1'}
-        variant='primary'
+        color='success'
         onClick={() => {
           addTodoHandler(newTodo).then(() => {
             setNewTodo('')
@@ -28,8 +28,8 @@ const AddTodo: React.FC<AddTodoProps> = observer(({ addTodoHandler }) => {
         }}
       >
         Додати
-      </Button>
-    </InputGroup>
+      </MDBBtn>
+    </MDBInputGroup>
   )
 })
 

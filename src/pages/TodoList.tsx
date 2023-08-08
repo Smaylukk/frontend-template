@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite'
 import React from 'react'
-import { ListGroup } from 'react-bootstrap'
 import { ITodo } from '../http/todoAPI'
 import TodoItem from './TodoItem'
+import { MDBListGroup } from 'mdb-react-ui-kit'
 
 interface TodoListProps {
   todoList: ITodo[]
@@ -24,7 +24,7 @@ const TodoList: React.FC<TodoListProps> = observer(
     editTodoButtonHandler,
   }) => {
     return (
-      <ListGroup>
+      <MDBListGroup>
         {todoList.map((item) => {
           return (
             <TodoItem
@@ -39,7 +39,7 @@ const TodoList: React.FC<TodoListProps> = observer(
             />
           )
         })}
-      </ListGroup>
+      </MDBListGroup>
     )
   },
 )

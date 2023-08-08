@@ -1,11 +1,19 @@
 import { observer } from 'mobx-react-lite'
-import React, { FormEvent, useContext, useState } from 'react'
-import { Button, Card, Container, Form, Row } from 'react-bootstrap'
+import React, { FormEvent, useContext, useRef, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { Context } from '..'
 import UserAPI from '../http/userAPI'
 import { LOGIN_ROUTE, HOME_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
-import { UserType } from '../store/UserStore'
+import { IUser, UserType } from '../store/UserStore'
+import {
+  MDBBtn,
+  MDBCard,
+  MDBContainer,
+  MDBInput,
+  MDBRow,
+  MDBValidation,
+  MDBValidationItem,
+} from 'mdb-react-ui-kit'
 
 const Auth = observer(() => {
   const { userStore } = useContext(Context) as UserType
@@ -16,39 +24,19 @@ const Auth = observer(() => {
   const [email, setEmail] = useState('')
   const [name, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState<{
-    email: string
-    name: string
-    password: string
-  }>({ email: '', name: '', password: '' })
+  const passInput = useRef<HTMLInputElement>(null)
 
   const validateForm = (): boolean => {
-    setErrors({ email: '', name: '', password: '' })
-    if (isRegPage) {
-      if (!name) {
-        setErrors((prev) => ({ ...prev, name: 'Найменування обовязкове' }))
-      }
-    }
-    if (!email) {
-      setErrors((prev) => ({ ...prev, email: 'Email обовязкове' }))
-    }
-    if (!/^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/.test(email)) {
-      setErrors((prev) => ({
-        ...prev,
-        email: 'Email має бути в email-форматі',
-      }))
-    }
-    if (!password) {
-      setErrors((prev) => ({ ...prev, password: 'Пароль обовязковий' }))
-    }
+    let isValid = true
+    console.log(passInput.current)
+    if (!passInput.current) return true
+    console.log('validation')
     if (password.length < 4) {
-      setErrors((prev) => ({
-        ...prev,
-        password: 'Довжина паролю має бути більша за 4 символи',
-      }))
+      passInput.current.setCustomValidity('Довжина паролю має бути більша за 4 символи')
+      isValid = false
     }
 
-    return !errors.email && !errors.name && !errors.password
+    return isValid
   }
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -56,7 +44,7 @@ const Auth = observer(() => {
       return
     }
     try {
-      let data
+      let data: IUser
       if (!isRegPage) {
         data = await UserAPI.login(email, password)
       } else {
@@ -74,64 +62,66 @@ const Auth = observer(() => {
   }
 
   return (
-    <Container
+    <MDBContainer
       className='d-flex justify-content-center align-items-center'
       style={{ height: window.innerHeight - 56 }}
     >
-      <Card style={{ width: 600 }} className='p-3'>
+      <MDBCard style={{ width: 600 }} className='p-3'>
         <h2 className='m-auto'>{!isRegPage ? 'Авторизація' : 'Реєстрація'}</h2>
-        <Form name='formAuth' className='d-flex flex-column' onSubmit={onSubmit}>
-          <Form.Control
-            className='mt-3'
-            placeholder='Введіть ваш email...'
-            type='email'
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {errors.email && (
-            <div>
-              <p>{errors.email}</p>
-            </div>
-          )}
-          {isRegPage && (
-            <Form.Control
-              className='mt-3'
-              placeholder="Введіть ваше ім'я..."
-              value={name}
-              onChange={(e) => setUsername(e.target.value)}
+        <MDBValidation className='row g-3' isValidated onSubmit={onSubmit}>
+          <MDBValidationItem
+            className='col-md-12'
+            feedback='Будь ласка введіть коректний email'
+            invalid
+          >
+            <MDBInput
+              label='Введіть ваш email...'
+              type='email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required={isRegPage}
             />
+          </MDBValidationItem>
+          {isRegPage && (
+            <MDBValidationItem className='col-md-12' feedback="Будь ласка заповніть ім'я" invalid>
+              <MDBInput
+                required
+                label="Введіть ваше ім'я..."
+                value={name}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </MDBValidationItem>
           )}
-          {isRegPage && errors.name && (
-            <div>
-              <p>{errors.name}</p>
-            </div>
-          )}
-          <Form.Control
-            className='mt-3'
-            placeholder='Введіть ваш пароль...'
-            type='password'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          {errors.password && (
-            <div>
-              <p>{errors.password}</p>
-            </div>
-          )}
-          <Row className='d-flex justify-content-between mt-3'>
+          <MDBValidationItem
+            className='col-md-12'
+            invalid
+            feedback="Пароль обов'язковий і повинен бути 4 і більше символів"
+          >
+            <MDBInput
+              label='Введіть ваш пароль...'
+              type='password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required={isRegPage}
+              min={isRegPage ? 4 : undefined}
+              ref={passInput}
+            />
+          </MDBValidationItem>
+
+          <MDBRow className='d-flex justify-content-between mt-3'>
             <div className='d-flex align-items-center'>
               Немає аккаунту?{' '}
               <NavLink to={!isRegPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
                 {!isRegPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
               </NavLink>
-              <Button type='submit' variant={'outline-success'} className='ms-auto'>
+              <MDBBtn type='submit' color={'success'} outline className='ms-auto'>
                 {!isRegPage ? 'Увійти' : 'Зареєструватись'}
-              </Button>
+              </MDBBtn>
             </div>
-          </Row>
-        </Form>
-      </Card>
-    </Container>
+          </MDBRow>
+        </MDBValidation>
+      </MDBCard>
+    </MDBContainer>
   )
 })
 

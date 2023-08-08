@@ -6,10 +6,11 @@ import './css/App.css'
 import { observer } from 'mobx-react-lite'
 import { Context } from './index'
 import UserAPI from './http/userAPI'
-import { Container, Spinner } from 'react-bootstrap'
+
 import AppRouter from './components/AppRouter'
 import NavBar from './components/NavBar'
 import { UserType } from './store/UserStore'
+import { MDBContainer, MDBSpinner } from 'mdb-react-ui-kit'
 
 library.add(fas)
 
@@ -29,12 +30,14 @@ const App = observer(() => {
 
   if (loading) {
     return (
-      <Container
+      <MDBContainer
         className='d-flex justify-content-center align-items-center'
         style={{ height: window.innerHeight }}
       >
-        <Spinner animation='border' />
-      </Container>
+        <MDBSpinner color='success'>
+          <span className='visually-hidden'>Loading...</span>
+        </MDBSpinner>
+      </MDBContainer>
     )
   }
 

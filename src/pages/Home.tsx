@@ -1,12 +1,12 @@
 import { observer } from 'mobx-react-lite'
 import React, { useContext, useEffect, useState } from 'react'
-import { Container, Row } from 'react-bootstrap'
 import TodoAPI, { ITodo } from '../http/todoAPI'
 import todoAPI from '../http/todoAPI'
 import { Context } from '../index'
 import { UserType } from '../store/UserStore'
 import AddTodo from './AddTodo'
 import TodoList from './TodoList'
+import { MDBContainer, MDBRow } from 'mdb-react-ui-kit'
 
 const Home = observer(() => {
   const [todoList, setTodoList] = useState<ITodo[]>([])
@@ -55,14 +55,14 @@ const Home = observer(() => {
   }
 
   return (
-    <Container>
+    <MDBContainer>
       <header className='mt-2' role='banner'>
         <h2>Список завдань:</h2>
       </header>
       <main className='mt-auto' role='main'>
         <AddTodo addTodoHandler={addTodoHandler} />
-        <Container className={'todo-list'} fluid>
-          <Row>
+        <MDBContainer className={'todo-list'} fluid>
+          <MDBRow>
             <TodoList
               todoList={todoList}
               editIndex={editIndex}
@@ -72,10 +72,10 @@ const Home = observer(() => {
               toggleCompletedTodoHandler={toggleCompletedTodoHandler}
               editTodoButtonHandler={editTodoButtonHandler}
             />
-          </Row>
-        </Container>
+          </MDBRow>
+        </MDBContainer>
       </main>
-    </Container>
+    </MDBContainer>
   )
 })
 

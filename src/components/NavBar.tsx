@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import React, { useContext } from 'react'
-import { Navbar, Container, Nav, Button } from 'react-bootstrap'
+import { MDBBtn, MDBContainer, MDBNavbar, MDBNavbarBrand, MDBNavbarNav } from 'mdb-react-ui-kit'
 import { Context } from '..'
 import { UserType } from '../store/UserStore'
+import logo from '../logo.png'
 
 const NavBar = observer(() => {
   const { userStore } = useContext(Context) as UserType
@@ -20,22 +21,23 @@ const NavBar = observer(() => {
 
   return (
     <>
-      <Navbar bg='primary' variant='dark'>
-        <Container>
-          <Navbar.Brand href='/'>
+      <MDBNavbar bgColor='success' dark>
+        <MDBContainer>
+          <MDBNavbarBrand href='/'>
+            <img src={logo} height='30' alt='' loading='lazy' />
             ToDo-list {userStore.isAuth ? `- ${userStore.user.email}(${userStore.user.name})` : ''}
-          </Navbar.Brand>
-          <Nav className='ms-auto'>
+          </MDBNavbarBrand>
+          <MDBNavbarNav className='ms-auto w-auto'>
             {userStore.isAuth && (
               <>
-                <Button className='ms-2' variant={'outline-light'} onClick={logout}>
+                <MDBBtn className='ms-2' onClick={logout} color='danger'>
                   Вийти
-                </Button>
+                </MDBBtn>
               </>
             )}
-          </Nav>
-        </Container>
-      </Navbar>
+          </MDBNavbarNav>
+        </MDBContainer>
+      </MDBNavbar>
     </>
   )
 })

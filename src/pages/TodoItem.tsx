@@ -1,8 +1,8 @@
 import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
-import { Button, Form, InputGroup, ListGroup } from 'react-bootstrap'
 import { ITodo } from '../http/todoAPI'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { MDBBtn, MDBInput, MDBInputGroup, MDBListGroupItem } from 'mdb-react-ui-kit'
 
 interface TodoItemProps {
   item: ITodo
@@ -27,9 +27,9 @@ const TodoItem: React.FC<TodoItemProps> = observer(
 
     if (editIndex === item.id) {
       return (
-        <ListGroup.Item className={'d-flex justify-content-between'}>
-          <InputGroup>
-            <Form.Control
+        <MDBListGroupItem className={'d-flex justify-content-between'}>
+          <MDBInputGroup>
+            <MDBInput
               type='text'
               id='newTodo'
               value={editTodo}
@@ -37,24 +37,24 @@ const TodoItem: React.FC<TodoItemProps> = observer(
                 setEditTodo(e.target.value)
               }}
             />
-            <Button
+            <MDBBtn
               className={'mx-1'}
-              variant='primary'
+              color='success'
               onClick={async () => {
                 await editTodoHandler(editTodo)
               }}
             >
               Зберегти
-            </Button>
-            <Button variant='danger' onClick={cancelEditTodoHandler}>
+            </MDBBtn>
+            <MDBBtn color='danger' onClick={cancelEditTodoHandler}>
               Відміна
-            </Button>
-          </InputGroup>
-        </ListGroup.Item>
+            </MDBBtn>
+          </MDBInputGroup>
+        </MDBListGroupItem>
       )
     } else {
       return (
-        <ListGroup.Item
+        <MDBListGroupItem
           key={item.id}
           className={`d-flex justify-content-between todoItem ${
             item.completed ? 'completedState' : ''
@@ -88,7 +88,7 @@ const TodoItem: React.FC<TodoItemProps> = observer(
               }}
             />
           </div>
-        </ListGroup.Item>
+        </MDBListGroupItem>
       )
     }
   },
