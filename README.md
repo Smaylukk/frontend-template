@@ -1,5 +1,5 @@
 # react-ts-bootstrap-auth-rest-api
-Шаблон для React на Bootstrap.
+Шаблон для React на [Bootstrap](https://getbootstrap.com/).
 Додаток по-замовчуванню має:
 * Сторінка атворизації/реєстрації
 * Сторінка відображення і керування списком завдань
