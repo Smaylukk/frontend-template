@@ -1,6 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons'
 import { BrowserRouter } from 'react-router-dom'
 import './css/App.css'
 import { observer } from 'mobx-react-lite'
@@ -10,8 +8,6 @@ import { Container, Spinner } from 'react-bootstrap'
 import AppRouter from './components/AppRouter'
 import NavBar from './components/NavBar'
 import { UserType } from './store/UserStore'
-
-library.add(fas)
 
 const App = observer(() => {
   const { userStore } = useContext(Context) as UserType
