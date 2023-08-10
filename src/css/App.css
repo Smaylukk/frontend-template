@@ -63,7 +63,7 @@ textarea {
   color: darkgreen;
 }
 .todoItem:hover {
-  background-color: rgba(192, 189, 192, 0.4);
+  background-color: rgba(229, 226, 229, 0.8);
 }
 
 @keyframes App-logo-spin {

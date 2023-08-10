@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^6.4.2",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.8",
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@mui/icons-material": "^5.14.3",
+    "@mui/material": "^5.14.4",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -17,7 +20,6 @@
     "axios": "^1.3.2",
     "buffer": "^6.0.3",
     "jwt-decode": "^3.1.2",
-    "mdb-react-ui-kit": "^6.2.0",
     "mobx": "^6.7.0",
     "mobx-react-lite": "^3.4.0",
     "path-browserify": "^1.0.1",
@@ -28,8 +30,8 @@
     "typescript": "^4.4.2"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.21.4",
-    "@babel/preset-react": "^7.18.6",
+    "@babel/preset-env": "^7.22.10",
+    "@babel/preset-react": "^7.22.5",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.56.0",
@@ -50,7 +52,7 @@
     "react-test-renderer": "^18.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3100 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

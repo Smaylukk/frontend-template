@@ -1,9 +1,9 @@
 import { observer } from 'mobx-react-lite'
 import React, { useContext } from 'react'
-import { MDBBtn, MDBContainer, MDBNavbar, MDBNavbarBrand, MDBNavbarNav } from 'mdb-react-ui-kit'
 import { Context } from '..'
 import { UserType } from '../store/UserStore'
 import logo from '../logo.png'
+import { AppBar, Button, Container, IconButton, Toolbar, Typography } from '@mui/material'
 
 const NavBar = observer(() => {
   const { userStore } = useContext(Context) as UserType
@@ -21,23 +21,45 @@ const NavBar = observer(() => {
 
   return (
     <>
-      <MDBNavbar bgColor='success' dark>
-        <MDBContainer>
-          <MDBNavbarBrand href='/'>
-            <img src={logo} height='30' alt='' loading='lazy' />
-            ToDo-list {userStore.isAuth ? `- ${userStore.user.email}(${userStore.user.name})` : ''}
-          </MDBNavbarBrand>
-          <MDBNavbarNav className='ms-auto w-auto'>
+      <AppBar color='secondary' position='static' enableColorOnDark>
+        <Container>
+          <Toolbar variant={'dense'}>
+            <IconButton
+              size='large'
+              edge='start'
+              color='inherit'
+              aria-label='menu'
+              sx={{ mr: 2 }}
+              href='/'
+            >
+              <img src={logo} height='30' alt='' loading='lazy' />
+            </IconButton>
+            <Typography
+              variant='h6'
+              noWrap
+              component='a'
+              href='/'
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                color: 'inherit',
+                textDecoration: 'none',
+                flexGrow: 1,
+              }}
+            >
+              ToDo-list{' '}
+              {userStore.isAuth ? `- ${userStore.user.email}(${userStore.user.name})` : ''}
+            </Typography>
+
             {userStore.isAuth && (
               <>
-                <MDBBtn className='ms-2' onClick={logout} color='danger'>
+                <Button className='ms-2' onClick={logout} color='error' variant={'contained'}>
                   Вийти
-                </MDBBtn>
+                </Button>
               </>
             )}
-          </MDBNavbarNav>
-        </MDBContainer>
-      </MDBNavbar>
+          </Toolbar>
+        </Container>
+      </AppBar>
     </>
   )
 })

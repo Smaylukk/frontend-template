@@ -6,7 +6,7 @@ import { Context } from '../index'
 import { UserType } from '../store/UserStore'
 import AddTodo from './AddTodo'
 import TodoList from './TodoList'
-import { MDBContainer, MDBRow } from 'mdb-react-ui-kit'
+import { Box, Container } from '@mui/material'
 
 const Home = observer(() => {
   const [todoList, setTodoList] = useState<ITodo[]>([])
@@ -55,27 +55,25 @@ const Home = observer(() => {
   }
 
   return (
-    <MDBContainer>
+    <Container component='main'>
       <header className='mt-2' role='banner'>
         <h2>Список завдань:</h2>
       </header>
-      <main className='mt-auto' role='main'>
-        <AddTodo addTodoHandler={addTodoHandler} />
-        <MDBContainer className={'todo-list'} fluid>
-          <MDBRow>
-            <TodoList
-              todoList={todoList}
-              editIndex={editIndex}
-              deleteTodoHandler={deleteTodoHandler}
-              editTodoHandler={editTodoHandler}
-              cancelEditTodoHandler={cancelEditTodoHandler}
-              toggleCompletedTodoHandler={toggleCompletedTodoHandler}
-              editTodoButtonHandler={editTodoButtonHandler}
-            />
-          </MDBRow>
-        </MDBContainer>
-      </main>
-    </MDBContainer>
+      <AddTodo addTodoHandler={addTodoHandler} />
+      <Container className={'todo-list'}>
+        <Box>
+          <TodoList
+            todoList={todoList}
+            editIndex={editIndex}
+            deleteTodoHandler={deleteTodoHandler}
+            editTodoHandler={editTodoHandler}
+            cancelEditTodoHandler={cancelEditTodoHandler}
+            toggleCompletedTodoHandler={toggleCompletedTodoHandler}
+            editTodoButtonHandler={editTodoButtonHandler}
+          />
+        </Box>
+      </Container>
+    </Container>
   )
 })
 
