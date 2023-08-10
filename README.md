@@ -19,5 +19,6 @@ By default, the application has:
 ## Варіанти реалізації / Template options
 [![Bootstrap](https://img.shields.io/badge/bootstrap-%23563D7C.svg?style=for-the-badge&logo=bootstrap&logoColor=white)](https://github.com/Smaylukk/frontend-template/tree/react-ts-bootstrap-auth-api)
 
-[![MDB](https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp)](https://github.com/Smaylukk/frontend-template/tree/react-ts-mdb-auth-api) 
+[![MDB](https://img.shields.io/badge/material%20design%20bootstrap-118BD1?style=for-the-badge&logo=material%20design&logoColor=white)](https://github.com/Smaylukk/frontend-template/tree/react-ts-mdb-auth-api) 
 
+[![MaterialUI](https://img.shields.io/badge/Material%20UI-609F90?style=for-the-badge&logo=mui&logoColor=white)](https://github.com/Smaylukk/frontend-template/tree/react-ts-mui-auth-api) 
