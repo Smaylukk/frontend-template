@@ -1,8 +1,15 @@
 import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
 import { ITodo } from '../http/todoAPI'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { MDBBtn, MDBInput, MDBInputGroup, MDBListGroupItem } from 'mdb-react-ui-kit'
+import {
+  MDBBtn,
+  MDBBtnGroup,
+  MDBIcon,
+  MDBInput,
+  MDBInputGroup,
+  MDBListGroupItem,
+  MDBTypography,
+} from 'mdb-react-ui-kit'
 
 interface TodoItemProps {
   item: ITodo
@@ -54,40 +61,58 @@ const TodoItem: React.FC<TodoItemProps> = observer(
       )
     } else {
       return (
-        <MDBListGroupItem
-          key={item.id}
-          className={`d-flex justify-content-between todoItem ${
-            item.completed ? 'completedState' : ''
-          }`}
-        >
-          {item.title}
-          <div className={'mr-auto'}>
-            <FontAwesomeIcon
-              color={'blue'}
-              className={'todoItemButton'}
-              icon={item.completed ? 'square-check' : 'square-minus'}
-              onClick={async () => {
-                await toggleCompletedTodoHandler(item.id!, item.completed)
-              }}
-            />
-            <FontAwesomeIcon
-              className={'mx-2 todoItemButton'}
-              color={'green'}
-              icon={'pen'}
-              onClick={() => {
-                setEditTodo(item.title)
-                editTodoButtonHandler(item.id!)
-              }}
-            />
-            <FontAwesomeIcon
-              className={'todoItemButton'}
-              icon={'trash'}
-              color={'red'}
-              onClick={async () => {
-                await deleteTodoHandler(item.id!)
-              }}
-            />
-          </div>
+        <MDBListGroupItem key={item.id} className={`d-flex justify-content-between `}>
+          <MDBTypography className={`todoItem ${item.completed ? 'completedState' : ''}`}>
+            {item.title}
+          </MDBTypography>
+          <MDBBtnGroup size='sm'>
+            {item.completed && (
+              <MDBBtn tag='a' color='none' className='m-1' size='lg' style={{ color: '#000000' }}>
+                <MDBIcon
+                  fas
+                  size='lg'
+                  icon='minus'
+                  onClick={async () => {
+                    await toggleCompletedTodoHandler(item.id!, item.completed)
+                  }}
+                />
+              </MDBBtn>
+            )}
+            {!item.completed && (
+              <MDBBtn tag='a' color='none' className='m-1' size='lg' style={{ color: '#000000' }}>
+                <MDBIcon
+                  fas
+                  size='lg'
+                  icon='check-square'
+                  out
+                  onClick={async () => {
+                    await toggleCompletedTodoHandler(item.id!, item.completed)
+                  }}
+                />
+              </MDBBtn>
+            )}
+            <MDBBtn tag='a' color='none' className='m-1' size='lg' style={{ color: '#000000' }}>
+              <MDBIcon
+                fas
+                size='lg'
+                icon='edit'
+                onClick={() => {
+                  setEditTodo(item.title)
+                  editTodoButtonHandler(item.id!)
+                }}
+              />
+            </MDBBtn>
+            <MDBBtn tag='a' color='none' className='m-1' size='lg' style={{ color: '#000000' }}>
+              <MDBIcon
+                fas
+                size='lg'
+                icon='trash-alt'
+                onClick={async () => {
+                  await deleteTodoHandler(item.id!)
+                }}
+              />
+            </MDBBtn>
+          </MDBBtnGroup>
         </MDBListGroupItem>
       )
     }
