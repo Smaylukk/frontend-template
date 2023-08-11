@@ -25,6 +25,7 @@ const Auth = observer(() => {
   const [name, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const passInput = useRef<HTMLInputElement>(null)
+  const [alertMsg, setAlertMsg] = useState('')
 
   const validateForm = (): boolean => {
     let isValid = true
@@ -57,7 +58,7 @@ const Auth = observer(() => {
       navigate(HOME_ROUTE)
     } catch (error: any) {
       console.log(error)
-      alert(error.response.data.message)
+      setAlertMsg(error.response.data.message)
     }
   }
 
@@ -119,6 +120,19 @@ const Auth = observer(() => {
               </MDBBtn>
             </div>
           </MDBRow>
+          {alertMsg && (
+            <MDBRow xs={12} className='mt-3'>
+              <div className='myAlert d-flex justify-content-around'>
+                <span style={{ flexGrow: 1 }}>{alertMsg}</span>
+                <MDBBtn
+                  className='btn-close mr-auto'
+                  color='none'
+                  aria-label='Close'
+                  onClick={() => setAlertMsg('')}
+                />
+              </div>
+            </MDBRow>
+          )}
         </MDBValidation>
       </MDBCard>
     </MDBContainer>
