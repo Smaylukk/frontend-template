@@ -1,18 +1,16 @@
 import { observer } from 'mobx-react-lite'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import TodoAPI, { ITodo } from '../http/todoAPI'
-import todoAPI from '../http/todoAPI'
-import { Context } from '../index'
-import { UserType } from '../store/UserStore'
-import AddTodo from './AddTodo'
-import TodoList from './TodoList'
+import AddTodo from '../components/AddTodo'
+import TodoList from '../components/TodoList'
 import { MDBContainer, MDBRow } from 'mdb-react-ui-kit'
+import useTodo from '../hooks/useTodo'
 
 const Home = observer(() => {
   const [todoList, setTodoList] = useState<ITodo[]>([])
   const [updateState, setUpdateState] = useState(true)
   const [editIndex, setEditIndex] = useState(-1)
-  const { userStore } = useContext(Context) as UserType
+  const [addTodoHandler] = useTodo(setUpdateState, setEditIndex)
 
   useEffect(() => {
     if (updateState) {
@@ -22,37 +20,6 @@ const Home = observer(() => {
       setUpdateState(false)
     }
   }, [updateState])
-
-  const addTodoHandler = async (newTodo: string) => {
-    await todoAPI.createTodo({
-      title: newTodo,
-      completed: false,
-      userId: userStore.user.id,
-    })
-    setUpdateState(true)
-  }
-  const deleteTodoHandler = async (id: number) => {
-    await todoAPI.deleteTodo(id)
-    setUpdateState(true)
-  }
-  const editTodoButtonHandler = (index: number) => {
-    setEditIndex(index)
-  }
-  const editTodoHandler = async (editTodo: string) => {
-    const data = { title: editTodo }
-    await todoAPI.changeTodo(editIndex, data)
-    setEditIndex(-1)
-    setUpdateState(true)
-  }
-  const cancelEditTodoHandler = () => {
-    setEditIndex(-1)
-    setUpdateState(true)
-  }
-  const toggleCompletedTodoHandler = async (id: number, currentStateCompleted: boolean) => {
-    const data = { completed: !currentStateCompleted }
-    await todoAPI.changeTodo(id, data)
-    setUpdateState(true)
-  }
 
   return (
     <MDBContainer>
@@ -66,11 +33,8 @@ const Home = observer(() => {
             <TodoList
               todoList={todoList}
               editIndex={editIndex}
-              deleteTodoHandler={deleteTodoHandler}
-              editTodoHandler={editTodoHandler}
-              cancelEditTodoHandler={cancelEditTodoHandler}
-              toggleCompletedTodoHandler={toggleCompletedTodoHandler}
-              editTodoButtonHandler={editTodoButtonHandler}
+              setEditIndex={setEditIndex}
+              setUpdateState={setUpdateState}
             />
           </MDBRow>
         </MDBContainer>

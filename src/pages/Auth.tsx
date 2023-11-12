@@ -1,10 +1,7 @@
 import { observer } from 'mobx-react-lite'
-import React, { FormEvent, useContext, useRef, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Context } from '..'
-import UserAPI from '../http/userAPI'
-import { LOGIN_ROUTE, HOME_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
-import { IUser, UserType } from '../store/UserStore'
+import React, { FormEvent, useRef, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { LOGIN_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
 import {
   MDBBtn,
   MDBCard,
@@ -14,22 +11,21 @@ import {
   MDBValidation,
   MDBValidationItem,
 } from 'mdb-react-ui-kit'
+import useLogin from '../hooks/useLogin'
 
 const Auth = observer(() => {
-  const { userStore } = useContext(Context) as UserType
   const location = useLocation()
-  const navigate = useNavigate()
-  const isRegPage = location.pathname === REGISTRATION_ROUTE
-
+  const isLoginPage = location.pathname === LOGIN_ROUTE
   const [email, setEmail] = useState('')
   const [name, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const passInput = useRef<HTMLInputElement>(null)
   const [alertMsg, setAlertMsg] = useState('')
+  const authHandler = useLogin(isLoginPage, setAlertMsg, name, email, password)
 
   const validateForm = (): boolean => {
     let isValid = true
-    if (!isRegPage) return isValid
+    if (isLoginPage) return isValid
     if (!passInput.current) return isValid
 
     if (password.length < 4) {
@@ -44,22 +40,7 @@ const Auth = observer(() => {
     if (!validateForm()) {
       return
     }
-    try {
-      let data: IUser
-      if (!isRegPage) {
-        data = await UserAPI.login(email, password)
-      } else {
-        data = await UserAPI.registration(email, name, password)
-      }
-
-      userStore.user = data
-      userStore.isAuth = true
-
-      navigate(HOME_ROUTE)
-    } catch (error: any) {
-      console.log(error)
-      setAlertMsg(error.response.data.message)
-    }
+    await authHandler()
   }
 
   return (
@@ -68,7 +49,7 @@ const Auth = observer(() => {
       style={{ height: window.innerHeight - 56 }}
     >
       <MDBCard style={{ width: 600 }} className='p-3'>
-        <h2 className='m-auto'>{!isRegPage ? 'Авторизація' : 'Реєстрація'}</h2>
+        <h2 className='m-auto'>{isLoginPage ? 'Авторизація' : 'Реєстрація'}</h2>
         <MDBValidation className='row g-3' isValidated onSubmit={onSubmit}>
           <MDBValidationItem
             className='col-md-12'
@@ -80,10 +61,10 @@ const Auth = observer(() => {
               type='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required={isRegPage}
+              required={!isLoginPage}
             />
           </MDBValidationItem>
-          {isRegPage && (
+          {!isLoginPage && (
             <MDBValidationItem className='col-md-12' feedback="Будь ласка заповніть ім'я" invalid>
               <MDBInput
                 required
@@ -103,8 +84,8 @@ const Auth = observer(() => {
               type='password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required={isRegPage}
-              min={isRegPage ? 4 : undefined}
+              required={!isLoginPage}
+              min={!isLoginPage ? 4 : undefined}
               ref={passInput}
             />
           </MDBValidationItem>
@@ -112,11 +93,11 @@ const Auth = observer(() => {
           <MDBRow className='d-flex justify-content-between mt-3'>
             <div className='d-flex align-items-center'>
               Немає аккаунту?{' '}
-              <NavLink to={!isRegPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
-                {!isRegPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
+              <NavLink to={isLoginPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
+                {isLoginPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
               </NavLink>
               <MDBBtn type='submit' color={'success'} outline className='ms-auto'>
-                {!isRegPage ? 'Увійти' : 'Зареєструватись'}
+                {isLoginPage ? 'Увійти' : 'Зареєструватись'}
               </MDBBtn>
             </div>
           </MDBRow>
