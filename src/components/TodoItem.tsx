@@ -1,5 +1,5 @@
 import { observer } from 'mobx-react-lite'
-import React, { useState } from 'react'
+import React, { useState, Dispatch, SetStateAction } from 'react'
 import { ITodo } from '../http/todoAPI'
 import {
   Button,
@@ -14,27 +14,25 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox'
 import UnCheckBoxIcon from '@mui/icons-material/CheckBoxOutlineBlank'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
+import useTodo from '../hooks/useTodo'
 
 interface TodoItemProps {
   item: ITodo
   editIndex: number
-  deleteTodoHandler: (id: number) => Promise<void>
-  editTodoHandler: (editTodo: string) => Promise<void>
-  cancelEditTodoHandler: () => void
-  editTodoButtonHandler: (editIndex: number) => void
-  toggleCompletedTodoHandler: (id: number, currentStateCompleted: boolean) => Promise<void>
+  setUpdateState: Dispatch<SetStateAction<boolean>>
+  setEditIndex: Dispatch<SetStateAction<number>>
 }
 const TodoItem: React.FC<TodoItemProps> = observer(
-  ({
-    item,
-    editIndex,
-    editTodoHandler,
-    deleteTodoHandler,
-    cancelEditTodoHandler,
-    toggleCompletedTodoHandler,
-    editTodoButtonHandler,
-  }) => {
+  ({ item, editIndex, setEditIndex, setUpdateState }) => {
     const [editTodo, setEditTodo] = useState('')
+    const [
+      ,
+      deleteTodoHandler,
+      editTodoButtonHandler,
+      editTodoHandler,
+      cancelEditTodoHandler,
+      toggleCompletedTodoHandler,
+    ] = useTodo(setUpdateState, setEditIndex)
 
     if (editIndex === item.id) {
       return (
@@ -54,7 +52,7 @@ const TodoItem: React.FC<TodoItemProps> = observer(
               color='success'
               variant={'contained'}
               onClick={async () => {
-                await editTodoHandler(editTodo)
+                await editTodoHandler(editTodo, editIndex)
               }}
             >
               Зберегти

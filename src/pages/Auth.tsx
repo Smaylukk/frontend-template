@@ -1,18 +1,12 @@
 import { observer } from 'mobx-react-lite'
-import React, { FormEvent, useContext, useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import { Alert, Box, Button, Container, Grid, TextField } from '@mui/material'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Context } from '..'
-import UserAPI from '../http/userAPI'
-import { LOGIN_ROUTE, HOME_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
-import { IUser, UserType } from '../store/UserStore'
+import { NavLink } from 'react-router-dom'
+import { LOGIN_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
+import useLogin from '../hooks/useLogin'
 
 const Auth = observer(() => {
-  const { userStore } = useContext(Context) as UserType
-  const location = useLocation()
-  const navigate = useNavigate()
-  const isRegPage = location.pathname === REGISTRATION_ROUTE
-
+  const isLoginPage = location.pathname === LOGIN_ROUTE
   const [email, setEmail] = useState('')
   const [name, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -22,11 +16,12 @@ const Auth = observer(() => {
     password: string
   }>({ email: '', name: '', password: '' })
   const [alertMsg, setAlertMsg] = useState('')
+  const authHandler = useLogin(isLoginPage, setAlertMsg, name, email, password)
 
   const validateForm = (): boolean => {
     let result = true
     setErrors((prev) => ({ ...prev, email: '', name: '', password: '' }))
-    if (isRegPage) {
+    if (!isLoginPage) {
       if (!name) {
         setErrors((prev) => ({ ...prev, name: 'Найменування обовязкове' }))
         result = false
@@ -62,22 +57,7 @@ const Auth = observer(() => {
     if (!validateForm()) {
       return
     }
-    try {
-      let data: IUser
-      if (!isRegPage) {
-        data = await UserAPI.login(email, password)
-      } else {
-        data = await UserAPI.registration(email, name, password)
-      }
-
-      userStore.user = data
-      userStore.isAuth = true
-
-      navigate(HOME_ROUTE)
-    } catch (error: any) {
-      console.log(error)
-      setAlertMsg(error.response.data.message)
-    }
+    await authHandler()
   }
 
   return (
@@ -92,7 +72,7 @@ const Auth = observer(() => {
       }}
     >
       <Box style={{ width: 600 }} className='p-3'>
-        <h2 className='m-auto'>{!isRegPage ? 'Авторизація' : 'Реєстрація'}</h2>
+        <h2 className='m-auto'>{isLoginPage ? 'Авторизація' : 'Реєстрація'}</h2>
         <Box component='form' className='row g-3' noValidate onSubmit={onSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -101,13 +81,13 @@ const Auth = observer(() => {
                 type='email'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required={isRegPage}
+                required={!isLoginPage}
                 fullWidth
                 helperText={errors.email}
                 error={errors.email.length > 0}
               />
             </Grid>
-            {isRegPage && (
+            {!isLoginPage && (
               <Grid item xs={12}>
                 <TextField
                   required
@@ -126,7 +106,7 @@ const Auth = observer(() => {
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required={isRegPage}
+                required={!isLoginPage}
                 fullWidth
                 helperText={errors.password}
                 error={errors.password.length > 0}
@@ -140,14 +120,14 @@ const Auth = observer(() => {
                 className='ms-auto'
                 fullWidth
               >
-                {!isRegPage ? 'Увійти' : 'Зареєструватись'}
+                {isLoginPage ? 'Увійти' : 'Зареєструватись'}
               </Button>
             </Grid>
             <Grid container justifyContent='flex-end'>
               <Grid item>
                 Немає аккаунту?{' '}
-                <NavLink to={!isRegPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
-                  {!isRegPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
+                <NavLink to={isLoginPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
+                  {isLoginPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
                 </NavLink>
               </Grid>
             </Grid>
