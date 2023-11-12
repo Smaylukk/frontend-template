@@ -1,4 +1,4 @@
-# react-ts-mdb-auth-rest-api
+# react-ts-mui-auth-rest-api
 Шаблон для React на [Material UI Kit (MUI)](https://mui.com/material-ui/getting-started/).
 Додаток по-замовчуванню має:
 * Сторінка атворизації/реєстрації
