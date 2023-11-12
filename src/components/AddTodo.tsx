@@ -1,6 +1,6 @@
 import { observer } from 'mobx-react-lite'
 import React, { useState } from 'react'
-import { Button, Stack, TextField } from '@mui/material'
+import { Button, Input, Stack } from '@chakra-ui/react'
 
 interface AddTodoProps {
   addTodoHandler: (newTodo: string) => Promise<void>
@@ -10,9 +10,8 @@ const AddTodo: React.FC<AddTodoProps> = observer(({ addTodoHandler }) => {
   const [newTodo, setNewTodo] = useState('')
   return (
     <Stack direction='row' spacing={1}>
-      <TextField
+      <Input
         size='small'
-        fullWidth
         type='text'
         id='newTodo'
         value={newTodo}
@@ -21,8 +20,7 @@ const AddTodo: React.FC<AddTodoProps> = observer(({ addTodoHandler }) => {
         }}
       />
       <Button
-        color='success'
-        variant='outlined'
+        colorScheme='green'
         onClick={() => {
           addTodoHandler(newTodo).then(() => {
             setNewTodo('')

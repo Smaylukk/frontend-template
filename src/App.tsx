@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { CircularProgress, Container } from '@mui/material'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons'
+import { CircularProgress, Container } from '@chakra-ui/react'
 import { BrowserRouter } from 'react-router-dom'
 import './css/App.css'
 import { observer } from 'mobx-react-lite'
@@ -10,8 +8,6 @@ import UserAPI from './http/userAPI'
 import AppRouter from './components/AppRouter'
 import NavBar from './components/NavBar'
 import { UserType } from './store/UserStore'
-
-library.add(fas)
 
 const App = observer(() => {
   const { userStore } = useContext(Context) as UserType
@@ -33,7 +29,7 @@ const App = observer(() => {
         className='d-flex justify-content-center align-items-center'
         style={{ height: window.innerHeight }}
       >
-        <CircularProgress color='primary' variant='determinate' size='lg' />
+        <CircularProgress size='lg' />
       </Container>
     )
   }

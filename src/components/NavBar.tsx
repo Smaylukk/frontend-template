@@ -3,7 +3,7 @@ import React, { useContext } from 'react'
 import { Context } from '..'
 import { UserType } from '../store/UserStore'
 import logo from '../logo.png'
-import { AppBar, Button, Container, IconButton, Toolbar, Typography } from '@mui/material'
+import { Box, Button, Flex, HStack, Image, Link, Stack, Text } from '@chakra-ui/react'
 
 const NavBar = observer(() => {
   const { userStore } = useContext(Context) as UserType
@@ -20,47 +20,51 @@ const NavBar = observer(() => {
   }
 
   return (
-    <>
-      <AppBar color='secondary' position='static' enableColorOnDark>
-        <Container>
-          <Toolbar variant={'dense'}>
-            <IconButton
-              size='large'
-              edge='start'
-              color='inherit'
-              aria-label='menu'
-              sx={{ mr: 2 }}
-              href='/'
-            >
-              <img src={logo} height='30' alt='' loading='lazy' />
-            </IconButton>
-            <Typography
-              variant='h6'
-              noWrap
-              component='a'
-              href='/'
-              sx={{
-                display: { xs: 'none', md: 'flex' },
-                color: 'inherit',
-                textDecoration: 'none',
-                flexGrow: 1,
-              }}
-            >
-              ToDo-list{' '}
-              {userStore.isAuth ? `- ${userStore.user.email}(${userStore.user.name})` : ''}
-            </Typography>
-
-            {userStore.isAuth && (
-              <>
-                <Button className='ms-2' onClick={logout} color='error' variant={'contained'}>
-                  Вийти
-                </Button>
-              </>
-            )}
-          </Toolbar>
-        </Container>
-      </AppBar>
-    </>
+    <Flex
+      as='nav'
+      align='center'
+      justify='space-between'
+      wrap='nowrap'
+      w='100%'
+      mb={1}
+      p={1}
+      bg={['teal']}
+      color={['white']}
+    >
+      <HStack alignItems='flex-start'>
+        <Image src={logo} height='30' alt='' loading='lazy' />
+        <Text fontSize='lg' fontWeight='bold' as={'a'} href={'/'}>
+          ToDo-list {userStore.isAuth ? `- ${userStore.user.email}(${userStore.user.name})` : ''}
+        </Text>
+      </HStack>
+      <Box flexBasis={{ base: '100%', md: 'auto' }}>
+        <Stack
+          spacing={8}
+          align='center'
+          justify={['center', 'space-between', 'flex-end', 'flex-end']}
+          direction={['column', 'row', 'row', 'row']}
+          pt={[4, 4, 0, 0]}
+        >
+          <Link href={'/'}>
+            <Text display='block'>
+              <Button
+                size='sm'
+                rounded='md'
+                color={['white']}
+                bg={['teal']}
+                _hover={{
+                  bg: ['black'],
+                }}
+                mr={5}
+                onClick={() => logout()}
+              >
+                Вийти
+              </Button>
+            </Text>
+          </Link>
+        </Stack>
+      </Box>
+    </Flex>
   )
 })
 

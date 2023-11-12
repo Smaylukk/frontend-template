@@ -1,167 +1,143 @@
 import { observer } from 'mobx-react-lite'
-import React, { FormEvent, useContext, useState } from 'react'
-import { Alert, Box, Button, Container, Grid, TextField } from '@mui/material'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Context } from '..'
-import UserAPI from '../http/userAPI'
-import { LOGIN_ROUTE, HOME_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
-import { IUser, UserType } from '../store/UserStore'
+import React, { FormEvent, useState } from 'react'
+import {
+  Flex,
+  Heading,
+  Input,
+  Button,
+  Stack,
+  Box,
+  Avatar,
+  FormControl,
+  AlertIcon,
+  Alert,
+  FormErrorMessage,
+} from '@chakra-ui/react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { LOGIN_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
+import useLogin from '../hooks/useLogin'
 
 const Auth = observer(() => {
-  const { userStore } = useContext(Context) as UserType
   const location = useLocation()
-  const navigate = useNavigate()
-  const isRegPage = location.pathname === REGISTRATION_ROUTE
+  const isLoginPage = location.pathname === LOGIN_ROUTE
 
   const [email, setEmail] = useState('')
-  const [name, setUsername] = useState('')
+  const [name, setName] = useState('')
   const [password, setPassword] = useState('')
+  const [alertMsg, setAlertMsg] = useState('')
+  const authHandler = useLogin(isLoginPage, setAlertMsg, name, email, password)
   const [errors, setErrors] = useState<{
     email: string
     name: string
     password: string
   }>({ email: '', name: '', password: '' })
-  const [alertMsg, setAlertMsg] = useState('')
 
   const validateForm = (): boolean => {
     let result = true
-    setErrors((prev) => ({ ...prev, email: '', name: '', password: '' }))
-    if (isRegPage) {
+    const newErrors = { email: '', name: '', password: '' }
+    if (!isLoginPage) {
       if (!name) {
-        setErrors((prev) => ({ ...prev, name: 'Найменування обовязкове' }))
+        newErrors.name = 'Найменування обовязкове'
         result = false
       }
     }
     if (!email) {
-      setErrors((prev) => ({ ...prev, email: 'Email обовязкове' }))
+      newErrors.email = 'Email обовязкове'
       result = false
     }
     if (!/^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/.test(email)) {
-      setErrors((prev) => ({
-        ...prev,
-        email: 'Email має бути в email-форматі',
-      }))
+      newErrors.email = 'Email має бути в email-форматі'
       result = false
     }
     if (!password) {
-      setErrors((prev) => ({ ...prev, password: 'Пароль обовязковий' }))
+      newErrors.password = 'Пароль обовязковий'
       result = false
     }
     if (password.length < 4) {
-      setErrors((prev) => ({
-        ...prev,
-        password: 'Довжина паролю має бути більша за 4 символи',
-      }))
+      newErrors.password = 'Довжина паролю має бути більша за 4 символи'
       result = false
     }
-
+    setErrors(newErrors)
+    console.log(newErrors)
     return result
   }
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    if (!validateForm()) {
-      return
-    }
-    try {
-      let data: IUser
-      if (!isRegPage) {
-        data = await UserAPI.login(email, password)
-      } else {
-        data = await UserAPI.registration(email, name, password)
-      }
-
-      userStore.user = data
-      userStore.isAuth = true
-
-      navigate(HOME_ROUTE)
-    } catch (error: any) {
-      console.log(error)
-      setAlertMsg(error.response.data.message)
+    setAlertMsg('')
+    if (validateForm()) {
+      await authHandler()
     }
   }
 
   return (
-    <Container
-      component='main'
-      maxWidth='xs'
-      sx={{
-        display: 'flex',
-        height: window.innerHeight - 56,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
+    <Flex
+      flexDirection='column'
+      width='100wh'
+      height='100vh'
+      backgroundColor='gray.200'
+      justifyContent='center'
+      alignItems='center'
     >
-      <Box style={{ width: 600 }} className='p-3'>
-        <h2 className='m-auto'>{!isRegPage ? 'Авторизація' : 'Реєстрація'}</h2>
-        <Box component='form' className='row g-3' noValidate onSubmit={onSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField
-                label='Введіть ваш email...'
-                type='email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required={isRegPage}
-                fullWidth
-                helperText={errors.email}
-                error={errors.email.length > 0}
-              />
-            </Grid>
-            {isRegPage && (
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  label="Введіть ваше ім'я..."
-                  value={name}
-                  onChange={(e) => setUsername(e.target.value)}
-                  fullWidth
-                  helperText={errors.name}
-                  error={errors.name.length > 0}
+      <h2>{isLoginPage ? 'Авторизація' : 'Реєстрація'}</h2>
+      <Stack flexDir='column' mb='2' justifyContent='center' alignItems='center'>
+        <Avatar bg='teal.500' />
+        <Heading color='teal.400'>Вітаємо</Heading>
+        <Box minW={{ base: '90%', md: '468px' }}>
+          <form onSubmit={onSubmit}>
+            <Stack spacing={4} p='1rem' backgroundColor='whiteAlpha.900' boxShadow='md'>
+              <FormControl isInvalid={!!errors.email}>
+                <Input
+                  type='email'
+                  placeholder='Email користувача'
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-              </Grid>
-            )}
-            <Grid item xs={12}>
-              <TextField
-                label='Введіть ваш пароль...'
-                type='password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required={isRegPage}
-                fullWidth
-                helperText={errors.password}
-                error={errors.password.length > 0}
-              />
-            </Grid>
-            <Grid item xs={12}>
+                <FormErrorMessage>{errors.email}</FormErrorMessage>
+              </FormControl>
+              {!isLoginPage && (
+                <FormControl isInvalid={!!errors.name}>
+                  <Input
+                    type='text'
+                    placeholder="Ім'я користувача"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <FormErrorMessage>{errors.name}</FormErrorMessage>
+                </FormControl>
+              )}
+              <FormControl isInvalid={!!errors.password}>
+                <Input
+                  type='password'
+                  placeholder='Пароль'
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <FormErrorMessage>{errors.password}</FormErrorMessage>
+              </FormControl>
               <Button
+                borderRadius={0}
                 type='submit'
-                color='success'
-                variant='outlined'
-                className='ms-auto'
-                fullWidth
+                variant='solid'
+                colorScheme='teal'
+                width='full'
               >
-                {!isRegPage ? 'Увійти' : 'Зареєструватись'}
+                {isLoginPage ? 'Авторизація' : 'Реєстрація'}
               </Button>
-            </Grid>
-            <Grid container justifyContent='flex-end'>
-              <Grid item>
-                Немає аккаунту?{' '}
-                <NavLink to={!isRegPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
-                  {!isRegPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
-                </NavLink>
-              </Grid>
-            </Grid>
-            {alertMsg && (
-              <Grid item xs={12}>
-                <Alert severity='error' onClose={() => setAlertMsg('')}>
-                  {alertMsg}
-                </Alert>
-              </Grid>
-            )}
-          </Grid>
+            </Stack>
+          </form>
         </Box>
+        <Alert status='error' display={alertMsg.length ? 'flex' : 'none'}>
+          <AlertIcon />
+          {alertMsg}
+        </Alert>
+      </Stack>
+      <Box>
+        Немає аккаунту?{' '}
+        <NavLink to={isLoginPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
+          {isLoginPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
+        </NavLink>
       </Box>
-    </Container>
+    </Flex>
   )
 })
 

@@ -1,48 +1,34 @@
 import { observer } from 'mobx-react-lite'
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { ITodo } from '../http/todoAPI'
-import {
-  Button,
-  ButtonGroup,
-  IconButton,
-  ListItem,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material'
-import CheckBoxIcon from '@mui/icons-material/CheckBox'
-import UnCheckBoxIcon from '@mui/icons-material/CheckBoxOutlineBlank'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
+import { Box, Button, ButtonGroup, IconButton, Input, ListItem, Stack } from '@chakra-ui/react'
+import { FaEdit, FaTrash, FaCheckSquare, FaSquareFull } from 'react-icons/fa'
+import useTodo from '../hooks/useTodo'
 
 interface TodoItemProps {
   item: ITodo
   editIndex: number
-  deleteTodoHandler: (id: number) => Promise<void>
-  editTodoHandler: (editTodo: string) => Promise<void>
-  cancelEditTodoHandler: () => void
-  editTodoButtonHandler: (editIndex: number) => void
-  toggleCompletedTodoHandler: (id: number, currentStateCompleted: boolean) => Promise<void>
+  setUpdateState: Dispatch<SetStateAction<boolean>>
+  setEditIndex: Dispatch<SetStateAction<number>>
 }
 const TodoItem: React.FC<TodoItemProps> = observer(
-  ({
-    item,
-    editIndex,
-    editTodoHandler,
-    deleteTodoHandler,
-    cancelEditTodoHandler,
-    toggleCompletedTodoHandler,
-    editTodoButtonHandler,
-  }) => {
+  ({ item, editIndex, setEditIndex, setUpdateState }) => {
     const [editTodo, setEditTodo] = useState('')
+    const [
+      ,
+      deleteTodoHandler,
+      editTodoButtonHandler,
+      editTodoHandler,
+      cancelEditTodoHandler,
+      toggleCompletedTodoHandler,
+    ] = useTodo(setUpdateState, setEditIndex)
 
     if (editIndex === item.id) {
       return (
         <ListItem>
           <Stack direction='row' spacing={1} sx={{ width: '100%' }}>
-            <TextField
+            <Input
               size='small'
-              fullWidth
               type='text'
               id='newTodo'
               value={editTodo}
@@ -51,15 +37,14 @@ const TodoItem: React.FC<TodoItemProps> = observer(
               }}
             />
             <Button
-              color='success'
-              variant={'contained'}
+              colorScheme='green'
               onClick={async () => {
-                await editTodoHandler(editTodo)
+                await editTodoHandler(editTodo, editIndex)
               }}
             >
               Зберегти
             </Button>
-            <Button variant={'contained'} color='error' onClick={cancelEditTodoHandler}>
+            <Button colorScheme='red' onClick={cancelEditTodoHandler}>
               Відміна
             </Button>
           </Stack>
@@ -72,43 +57,45 @@ const TodoItem: React.FC<TodoItemProps> = observer(
           className={`todoItem`}
           sx={{ display: 'flex', justifyContent: 'space-between' }}
         >
-          <Typography className={`${item.completed ? 'completedState' : ''}`}>
-            {item.title}
-          </Typography>
-          <ButtonGroup>
+          <Box className={`${item.completed ? 'completedState' : ''}`}>{item.title}</Box>
+          <ButtonGroup m={1}>
             {item.completed && (
               <IconButton
+                aria-label='check'
+                variant='outline'
                 onClick={async () => {
                   await toggleCompletedTodoHandler(item.id!, item.completed)
                 }}
-              >
-                <CheckBoxIcon />
-              </IconButton>
+                icon={<FaCheckSquare />}
+              />
             )}
             {!item.completed && (
               <IconButton
+                aria-label='uncheck'
+                variant='outline'
                 onClick={async () => {
                   await toggleCompletedTodoHandler(item.id!, item.completed)
                 }}
-              >
-                <UnCheckBoxIcon />
-              </IconButton>
+                icon={<FaSquareFull />}
+              />
             )}
             <IconButton
+              aria-label='edit'
+              variant='outline'
               onClick={() => {
                 setEditTodo(item.title)
                 editTodoButtonHandler(item.id!)
               }}
-            >
-              <EditIcon />
-            </IconButton>
+              icon={<FaEdit />}
+            />
             <IconButton
+              aria-label='delete'
+              variant='outline'
               onClick={async () => {
                 await deleteTodoHandler(item.id!)
               }}
-            >
-              <DeleteIcon />
-            </IconButton>
+              icon={<FaTrash />}
+            />
           </ButtonGroup>
         </ListItem>
       )
