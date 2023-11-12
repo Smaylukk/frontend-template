@@ -1,29 +1,27 @@
 import { observer } from 'mobx-react-lite'
-import React, { useState } from 'react'
+import React, { useState, Dispatch, SetStateAction } from 'react'
 import { Button, ButtonGroup, Form, InputGroup, ListGroup } from 'react-bootstrap'
 import * as Icon from 'react-bootstrap-icons'
 import { ITodo } from '../http/todoAPI'
+import useTodo from '../hooks/useTodo'
 
 interface TodoItemProps {
   item: ITodo
   editIndex: number
-  deleteTodoHandler: (id: number) => Promise<void>
-  editTodoHandler: (editTodo: string) => Promise<void>
-  cancelEditTodoHandler: () => void
-  editTodoButtonHandler: (editIndex: number) => void
-  toggleCompletedTodoHandler: (id: number, currentStateCompleted: boolean) => Promise<void>
+  setUpdateState: Dispatch<SetStateAction<boolean>>
+  setEditIndex: Dispatch<SetStateAction<number>>
 }
 const TodoItem: React.FC<TodoItemProps> = observer(
-  ({
-    item,
-    editIndex,
-    editTodoHandler,
-    deleteTodoHandler,
-    cancelEditTodoHandler,
-    toggleCompletedTodoHandler,
-    editTodoButtonHandler,
-  }) => {
+  ({ item, editIndex, setEditIndex, setUpdateState }) => {
     const [editTodo, setEditTodo] = useState('')
+    const [
+      ,
+      deleteTodoHandler,
+      editTodoButtonHandler,
+      editTodoHandler,
+      cancelEditTodoHandler,
+      toggleCompletedTodoHandler,
+    ] = useTodo(setUpdateState, setEditIndex)
 
     if (editIndex === item.id) {
       return (
@@ -41,7 +39,7 @@ const TodoItem: React.FC<TodoItemProps> = observer(
               className={'mx-2'}
               variant='primary'
               onClick={async () => {
-                await editTodoHandler(editTodo)
+                await editTodoHandler(editTodo, editIndex)
               }}
             >
               Зберегти

@@ -1,18 +1,13 @@
 import { observer } from 'mobx-react-lite'
-import React, { FormEvent, useContext, useState } from 'react'
+import React, { FormEvent, useState } from 'react'
 import { Button, Card, Container, Form, Row, Col, Alert } from 'react-bootstrap'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Context } from '..'
-import UserAPI from '../http/userAPI'
-import { LOGIN_ROUTE, HOME_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
-import { UserType } from '../store/UserStore'
+import { NavLink, useLocation } from 'react-router-dom'
+import { LOGIN_ROUTE, REGISTRATION_ROUTE } from '../utils/consts'
+import useLogin from '../hooks/useLogin'
 
 const Auth = observer(() => {
-  const { userStore } = useContext(Context) as UserType
   const location = useLocation()
-  const navigate = useNavigate()
-  const isRegPage = location.pathname === REGISTRATION_ROUTE
-
+  const isLoginPage = location.pathname === LOGIN_ROUTE
   const [email, setEmail] = useState('')
   const [name, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -22,39 +17,36 @@ const Auth = observer(() => {
     password: string
   }>({ email: '', name: '', password: '' })
   const [alertMsg, setAlertMsg] = useState('')
+  const authHandler = useLogin(isLoginPage, setAlertMsg, name, email, password)
 
   const validateForm = (): boolean => {
     let result = true
-    setErrors({ email: '', name: '', password: '' })
-    if (isRegPage) {
+    const newErrors = { email: '', name: '', password: '' }
+    if (!isLoginPage) {
       if (!name) {
-        setErrors((prev) => ({ ...prev, name: 'Найменування обовязкове' }))
+        newErrors.name = 'Найменування обовязкове'
         result = false
       }
     }
     if (!email) {
-      setErrors((prev) => ({ ...prev, email: 'Email обовязкове' }))
+      newErrors.email = 'Email обовязкове'
       result = false
     }
     if (!/^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/.test(email)) {
-      setErrors((prev) => ({
-        ...prev,
-        email: 'Email має бути в email-форматі',
-      }))
+      newErrors.email = 'Email має бути в email-форматі'
       result = false
     }
     if (!password) {
-      setErrors((prev) => ({ ...prev, password: 'Пароль обовязковий' }))
+      newErrors.password = 'Пароль обовязковий'
       result = false
     }
     if (password.length < 4) {
-      setErrors((prev) => ({
-        ...prev,
-        password: 'Довжина паролю має бути більша за 4 символи',
-      }))
+      newErrors.password = 'Довжина паролю має бути більша за 4 символи'
+
       result = false
     }
 
+    setErrors(newErrors)
     return result
   }
   const onSubmit = async (e: FormEvent) => {
@@ -62,22 +54,7 @@ const Auth = observer(() => {
     if (!validateForm()) {
       return
     }
-    try {
-      let data
-      if (!isRegPage) {
-        data = await UserAPI.login(email, password)
-      } else {
-        data = await UserAPI.registration(email, name, password)
-      }
-
-      userStore.user = data
-      userStore.isAuth = true
-
-      navigate(HOME_ROUTE)
-    } catch (error: any) {
-      console.log(error)
-      setAlertMsg(error.response.data.message)
-    }
+    await authHandler()
   }
 
   return (
@@ -86,7 +63,7 @@ const Auth = observer(() => {
       style={{ height: window.innerHeight - 56 }}
     >
       <Card style={{ width: 600 }} className='p-3'>
-        <h2 className='m-auto'>{!isRegPage ? 'Авторизація' : 'Реєстрація'}</h2>
+        <h2 className='m-auto'>{isLoginPage ? 'Авторизація' : 'Реєстрація'}</h2>
         <Form name='formAuth' className='d-flex flex-column' onSubmit={onSubmit}>
           <Form.Group as={Col} md='12' className='position-relative mt-3'>
             <Form.Label>Email</Form.Label>
@@ -99,7 +76,7 @@ const Auth = observer(() => {
             />
             <Form.Control.Feedback type='invalid'>{errors.email}</Form.Control.Feedback>
           </Form.Group>
-          {isRegPage && (
+          {!isLoginPage && (
             <Form.Group as={Col} md='12' className='position-relative mt-3'>
               <Form.Label>{"Ім'я користувача"}</Form.Label>
               <Form.Control
@@ -125,11 +102,11 @@ const Auth = observer(() => {
           <Row className='d-flex justify-content-between mt-3'>
             <div className='d-flex align-items-center'>
               Немає аккаунту?{' '}
-              <NavLink to={!isRegPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
-                {!isRegPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
+              <NavLink to={isLoginPage ? REGISTRATION_ROUTE : LOGIN_ROUTE}>
+                {isLoginPage ? 'Зареєструтесь' : 'Авторизуйтесь'}
               </NavLink>
               <Button type='submit' variant={'outline-success'} className='ms-auto'>
-                {!isRegPage ? 'Увійти' : 'Зареєструватись'}
+                {isLoginPage ? 'Увійти' : 'Зареєструватись'}
               </Button>
             </div>
           </Row>
